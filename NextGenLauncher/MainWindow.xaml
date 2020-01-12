@@ -1,0 +1,163 @@
+﻿<Window x:Class="NextGenLauncher.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:utils="clr-namespace:NextGenLauncher.Utils"
+        xmlns:data="clr-namespace:NextGenLauncher.Data"
+        mc:Ignorable="d"
+        Title="Soapbox Race World" Height="400" Width="800" 
+        Icon="Resources/sbrw_icon.png"
+        ResizeMode="CanMinimize"
+        DataContext="{Binding Source={StaticResource Locator}, Path=Main}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="8*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <!-- Main launcher elements -->
+        <Grid Background="WhiteSmoke">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2" Grid.Column="0">
+                <ComboBox HorizontalAlignment="Right" SelectedItem="{Binding SelectedServer}" ItemsSource="{Binding Servers}" DisplayMemberPath="Name">
+                </ComboBox>
+                <!--<Button Content="Settings" Padding="2, 4, 2, 4" BorderBrush="DarkGray" Background="WhiteSmoke"></Button>-->
+            </StackPanel>
+            <!-- Server info -->
+            <Grid Grid.Row="1" Grid.Column="0" Background="WhiteSmoke">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="223"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Image Width="526" Stretch="Fill" Height="223" Source="https://i.imgur.com/EmxYSGu.png" VerticalAlignment="Top"></Image>
+                <TextBlock Grid.Row="1"
+                           Margin="10" VerticalAlignment="Center"
+                           Text="{Binding SelectedServer.Name}" FontSize="24" FontWeight="Bold">
+                </TextBlock>
+                <TextBlock Grid.Row="2" 
+                           Margin="10,0,0,10"
+                           VerticalAlignment="Center">
+                    <Run>Status:</Run>
+                    <Run FontWeight="Bold">
+                        <Run.Style>
+                            <Style TargetType="{x:Type Run}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedServer.Stats.Status}" Value="{x:Static data:ServerStats+ServerStatus.Online}">
+                                        <Setter Property="Foreground" Value="Green"></Setter>
+                                        <Setter Property="Text" Value="Online"></Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding SelectedServer.Stats.Status}" Value="{x:Static data:ServerStats+ServerStatus.Offline}">
+                                        <Setter Property="Foreground" Value="Red"></Setter>
+                                        <Setter Property="Text" Value="Offline"></Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding SelectedServer.Stats.Status}" Value="{x:Static data:ServerStats+ServerStatus.Unknown}">
+                                        <Setter Property="Text" Value="Unknown"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Run.Style>
+                    </Run>
+                    <!--<Run Foreground="DarkGreen" FontWeight="Bold">Online</Run>
+                    <Run>(3/20)</Run>-->
+                </TextBlock>
+            </Grid>
+
+            <Grid Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">
+                <Grid.Style>
+                    <Style TargetType="{x:Type Grid}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding InAuthentication}" Value="False">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <TextBlock HorizontalAlignment="Center" Text="Log In" FontSize="24"></TextBlock>
+                <Grid Grid.Row="1" Margin="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0">E-mail:</Label>
+                    <TextBox Grid.Row="0" Grid.Column="1" Margin="5,0,0,5" Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" />
+                    <Label Grid.Row="1" Grid.Column="0">Password:</Label>
+                    <PasswordBox Grid.Row="1" Grid.Column="1" Margin="5,0,0,5"
+                                 utils:PasswordBoxAssistant.BindPassword="True"
+                                 utils:PasswordBoxAssistant.BoundPassword="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    </PasswordBox>
+                    <!--<TextBox Grid.Row="1" Grid.Column="1" Margin="5,0,0,5" Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}" />-->
+                    <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,15,0,0">
+                        <Button Content="Log in" Command="{Binding LoginCommand}" Margin="0,0,0,5"></Button>
+                        <TextBlock HorizontalAlignment="Center" Margin="0,0,0,5">or</TextBlock>
+                        <Button Content="Create account" IsEnabled="False"></Button>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+
+            <Grid Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">
+                <Grid.Style>
+                    <Style TargetType="{x:Type Grid}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding InAuthentication}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="1" Margin="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Margin="0,15,0,0">
+                        <Button Padding="5" 
+                                Command="{Binding PlayCommand}"
+                                Content="Play" 
+                                FontSize="24" FontWeight="Bold"
+                                Background="RoyalBlue"></Button>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Grid>
+        <Grid Grid.Row="1" Background="LightGray">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock VerticalAlignment="Center" Margin="5">
+                    <Run>
+                        Launcher version:
+                    </Run>
+                    <Run FontWeight="Bold">
+                        1.0.2
+                    </Run>
+                    <Run Foreground="DarkGreen">
+                        (up to date)
+                    </Run>
+            </TextBlock>
+            <!--<ProgressBar Grid.Column="2" VerticalContentAlignment="Center" Margin="0,0,5,0" IsIndeterminate="True" Width="200" Height="20"></ProgressBar>-->
+        </Grid>
+    </Grid>
+</Window>
