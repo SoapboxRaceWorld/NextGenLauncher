@@ -1,4 +1,12 @@
-﻿using System;
+﻿using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.CommandWpf;
+using Ionic.Zip;
+using Microsoft.Win32;
+using Newtonsoft.Json;
+using NextGenLauncher.Data;
+using NextGenLauncher.Exceptions;
+using NextGenLauncher.ViewModel.Installer;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -10,14 +18,6 @@ using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Xml;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.CommandWpf;
-using Ionic.Zip;
-using Microsoft.Win32;
-using Newtonsoft.Json;
-using NextGenLauncher.Data;
-using NextGenLauncher.Exceptions;
-using NextGenLauncher.ViewModel.Installer;
 
 namespace NextGenLauncher.ViewModel
 {
@@ -219,20 +219,14 @@ namespace NextGenLauncher.ViewModel
                     var tmpFile = Path.GetTempFileName();
                     using (FileStream fileStream = new FileStream(tmpFile, FileMode.Create, FileAccess.Write))
                     {
-                        DownloadState state = new DownloadState { BytesToGet = cl, Message = $"Downloading package: {packageId}"};
+                        DownloadState state = new DownloadState { BytesToGet = cl, Message = $"Downloading package: {packageId}" };
                         byte[] buffer = new byte[1048576];
-                        //int bytesRead = responseStream.Read(buffer, 0, 4096);
                         int bytesRead;
                         while ((bytesRead = responseStream.Read(buffer, 0, buffer.Length)) > 0)
                         {
                             fileStream.Write(buffer, 0, bytesRead);
                             state.BytesRead = fileStream.Length;
-                            //ByteSize downloadedByteSize = ByteSize.FromBytes(fileStream.Length);
-                            //ByteSize totalByteSize = ByteSize.FromBytes(cl);
-                            //state.Message = $"Downloading {packageId} - {downloadedByteSize.ToString("MB")}/{totalByteSize.ToString("MB")}";
-
                             bgw.ReportProgress(0, state);
-                            //bgw.ReportProgress((int)((float)fileStream.Length / cl) * 100, $"Downloading {packageId} - {fileStream.Length}/{cl} bytes");
                         }
                     }
 

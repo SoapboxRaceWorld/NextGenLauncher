@@ -1,11 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using System.Windows.Documents;
-using System.Xml.Serialization;
-using Flurl;
+﻿using Flurl;
 using Flurl.Http;
 using GalaSoft.MvvmLight.Messaging;
 using NextGenLauncher.Data;
@@ -14,6 +7,13 @@ using NextGenLauncher.Messages;
 using NextGenLauncher.ServerModels;
 using NextGenLauncher.Services.Servers;
 using NextGenLauncher.Utils;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace NextGenLauncher.Services
 {
@@ -43,10 +43,18 @@ namespace NextGenLauncher.Services
             TriggerListMessage();
         }
 
-        public async Task<AuthenticationInfo> LogIn(Server server, string email, string password)
+        /// <summary>
+        /// Attempts to log in to a server with the given email address and password.
+        /// </summary>
+        /// <param name="server">The server to log in to</param>
+        /// <param name="email">The user's email address</param>
+        /// <param name="password">The user's password</param>
+        /// <returns>A <see cref="AuthenticationInfo"/> instance with token/userID</returns>
+        /// <exception cref="AuthenticationException">if there is an error while attempting to log in</exception>
+        public async Task<AuthenticationInfo> LogInAsync(Server server, string email, string password)
         {
             var response = await new Url(server.ServerAddress).AppendPathSegments("User", "authenticateUser")
-                .SetQueryParam("email", email).SetQueryParam("password", AuthUtil.Hash(password).ToLower())
+                .SetQueryParam("email", email).SetQueryParam("password", HashUtil.HashSha1(password).ToLower())
                 .WithHeader("X-UserAgent",
                     "GameLauncherReborn 2.0.8.8 WinForms (+https://github.com/worldunitedgg/GameLauncher_NFSW)")
                 .WithHeader("User-Agent", "GameLauncher (+https://github.com/SoapboxRaceWorld/GameLauncher_NFSW)")
@@ -63,13 +71,28 @@ namespace NextGenLauncher.Services
             };
         }
 
+        /// <summary>
+        /// Fetches information about the given server
+        /// </summary>
+        /// <param name="server">The server</param>
+        /// <returns></returns>
+        public void FetchServerInfo(Server server)
+        {
+            if (server.Stats.Status != ServerStats.ServerStatus.Online) return;
+
+            ServerInformation serverInformation = new Url(server.ServerAddress).AppendPathSegment("GetServerInformation")
+                .AllowAnyHttpStatus()
+                .GetJsonAsync<ServerInformation>().Result;
+            server.BannerUrl = serverInformation.BannerUrl;
+        }
+
         private AuthenticationInfo ParseToAuthenticationInfo(string data)
         {
             XmlSerializer serializer =
                 new XmlSerializer(typeof(LoginStatusVO));
 
             using StringReader reader = new StringReader(data);
-            LoginStatusVO loginStatus = (LoginStatusVO) serializer.Deserialize(reader);
+            LoginStatusVO loginStatus = (LoginStatusVO)serializer.Deserialize(reader);
 
             return new AuthenticationInfo
             {

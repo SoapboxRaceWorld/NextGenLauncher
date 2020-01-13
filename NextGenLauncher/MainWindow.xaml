@@ -35,17 +35,15 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="223"></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="5"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
-                <Image Width="526" Stretch="Fill" Height="223" Source="https://i.imgur.com/EmxYSGu.png" VerticalAlignment="Top"></Image>
+                <Image Width="522" Stretch="Fill" Height="223" Source="{Binding SelectedServer.BannerUrl}" VerticalAlignment="Top"></Image>
                 <TextBlock Grid.Row="1"
-                           Margin="10" VerticalAlignment="Center"
-                           Text="{Binding SelectedServer.Name}" FontSize="24" FontWeight="Bold">
-                </TextBlock>
-                <TextBlock Grid.Row="2" 
-                           Margin="10,0,0,10"
-                           VerticalAlignment="Center">
-                    <Run>Status:</Run>
+                           Margin="10" VerticalAlignment="Center">
+                    <Run
+                        Text="{Binding SelectedServer.Name}" FontSize="24" FontWeight="Bold"></Run>
+                    <Run>-</Run>
                     <Run FontWeight="Bold">
                         <Run.Style>
                             <Style TargetType="{x:Type Run}">
@@ -65,11 +63,10 @@
                             </Style>
                         </Run.Style>
                     </Run>
-                    <!--<Run Foreground="DarkGreen" FontWeight="Bold">Online</Run>
-                    <Run>(3/20)</Run>-->
                 </TextBlock>
+                <ProgressBar Grid.Row="2" Value="{Binding PlayProgress.ProgressValue}" IsIndeterminate="{Binding PlayProgress.IsIndeterminate}"></ProgressBar>
+                <TextBlock Grid.Row="3" Text="{Binding PlayProgress.ProgressText}" Margin="5,0,0,0"></TextBlock>
             </Grid>
-
             <Grid Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">
                 <Grid.Style>
                     <Style TargetType="{x:Type Grid}">
@@ -151,7 +148,7 @@
                         Launcher version:
                     </Run>
                     <Run FontWeight="Bold">
-                        1.0.2
+                        1.0.3
                     </Run>
                     <Run Foreground="DarkGreen">
                         (up to date)

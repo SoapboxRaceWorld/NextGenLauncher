@@ -34,6 +34,7 @@ namespace NextGenLauncher.ViewModel
     public class MainViewModel : ViewModelBase
     {
         private readonly ServerService _serverService;
+        private readonly ServerModService _serverModService;
         private Server _selectedServer;
         private string _email;
         private string _password;
@@ -51,6 +52,7 @@ namespace NextGenLauncher.ViewModel
             get => _selectedServer;
             set
             {
+                _serverService.FetchServerInfo(value);
                 Set(ref _selectedServer, value);
                 LoginCommand.RaiseCanExecuteChanged();
             }
@@ -86,13 +88,17 @@ namespace NextGenLauncher.ViewModel
 
         public RelayCommand PlayCommand { get; }
 
+        public ProgressState PlayProgress { get; }
+
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
         /// <param name="serverService">The server service</param>
-        public MainViewModel(ServerService serverService)
+        /// <param name="serverModService"></param>
+        public MainViewModel(ServerService serverService, ServerModService serverModService)
         {
             _serverService = serverService;
+            _serverModService = serverModService;
 
             // Setup
             Servers = new ObservableCollection<Server>();
@@ -104,6 +110,7 @@ namespace NextGenLauncher.ViewModel
             // Data
             serverService.FetchServers();
 
+            PlayProgress = new ProgressState { ProgressText = "Waiting..." };
             InAuthentication = true;
         }
 
@@ -112,17 +119,28 @@ namespace NextGenLauncher.ViewModel
             return !_gameRunning;
         }
 
-        private void ExecutePlayCommand()
+        private async void ExecutePlayCommand()
         {
             Process process = new Process();
+            var gameDataPath = Path.Combine((string)Registry.GetValue(@"HKEY_LOCAL_MACHINE\software\SoapDev\Soapbox Race World",
+                "GameInstallDir", ""), "Data");
             process.StartInfo.FileName =
                 Path.Combine(
-                    (string) Registry.GetValue(@"HKEY_LOCAL_MACHINE\software\SoapDev\Soapbox Race World",
-                        "GameInstallDir", ""), "Data", "nfsw.exe");
+                    gameDataPath, "nfsw.exe");
             if (!File.Exists(process.StartInfo.FileName))
             {
                 throw new PlayException("Game executable does not exist: " + process.StartInfo.FileName);
             }
+
+            // Download mods
+            PlayProgress.IsIndeterminate = true;
+            PlayProgress.ProgressText = "Installing mod system...";
+            await _serverModService.InstallModSystemAsync(gameDataPath);
+            PlayProgress.ProgressText = "Downloading mods...";
+            await _serverModService.DownloadServerModsAsync(SelectedServer, gameDataPath);
+            PlayProgress.IsIndeterminate = false;
+            PlayProgress.ProgressValue = 100;
+            PlayProgress.ProgressText = "Launching game...";
 
             if (_authenticationInfo == null)
             {
@@ -155,7 +173,7 @@ namespace NextGenLauncher.ViewModel
         {
             try
             {
-                AuthenticationInfo authenticationInfo = await _serverService.LogIn(SelectedServer, Email, Password);
+                AuthenticationInfo authenticationInfo = await _serverService.LogInAsync(SelectedServer, Email, Password);
                 MessengerInstance.Send(new AuthenticationInfoUpdatedMessage(authenticationInfo));
             }
             catch (AuthenticationException e)

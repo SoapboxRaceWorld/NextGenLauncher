@@ -44,6 +44,7 @@ namespace NextGenLauncher.ViewModel
             ////}
 
             SimpleIoc.Default.Register(() => new ServerService(), true);
+            SimpleIoc.Default.Register(() => new ServerModService(), true);
             SimpleIoc.Default.Register<MainViewModel>();
             SimpleIoc.Default.Register<InstallerViewModel>();
         }

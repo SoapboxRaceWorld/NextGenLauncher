@@ -33,5 +33,8 @@ namespace NextGenLauncher.Data
         public string Key { get; set; }
         [JsonProperty("stats")]
         public ServerStats Stats { get; set; }
+
+        [JsonIgnore]
+        public string BannerUrl { get; set; }
     }
 }

@@ -96,6 +96,7 @@
     <Compile Include="Exceptions\AuthenticationException.cs" />
     <Compile Include="Exceptions\InstallerException.cs" />
     <Compile Include="Exceptions\InvalidServerListException.cs" />
+    <Compile Include="Exceptions\ModSystemException.cs" />
     <Compile Include="Exceptions\PlayException.cs" />
     <Compile Include="InstallationWindow.xaml.cs">
       <DependentUpon>InstallationWindow.xaml</DependentUpon>
@@ -103,11 +104,15 @@
     <Compile Include="Messages\AuthenticationInfoUpdatedMessage.cs" />
     <Compile Include="Messages\ServerListUpdatedMessage.cs" />
     <Compile Include="ServerModels\LoginStatusVO.cs" />
+    <Compile Include="ServerModels\ModIndex.cs" />
+    <Compile Include="ServerModels\ModSystemInfo.cs" />
+    <Compile Include="ServerModels\ServerInformation.cs" />
+    <Compile Include="Services\ServerModService.cs" />
     <Compile Include="Services\ServerService.cs" />
     <Compile Include="Services\Servers\AuthenticationInfo.cs" />
     <Compile Include="Services\Servers\IServerListSource.cs" />
     <Compile Include="Services\Servers\RemoteListSource.cs" />
-    <Compile Include="Utils\AuthUtil.cs" />
+    <Compile Include="Utils\HashUtil.cs" />
     <Compile Include="Utils\BindingProxy.cs" />
     <Compile Include="Utils\PasswordBoxAssistant.cs" />
     <Compile Include="ViewModel\InstallerViewModel.cs" />
