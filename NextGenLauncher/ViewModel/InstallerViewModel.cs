@@ -1,28 +1,25 @@
-﻿using GalaSoft.MvvmLight;
+﻿using Flurl;
+using Flurl.Http;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using Ionic.Zip;
 using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using Newtonsoft.Json;
 using NextGenLauncher.Data;
 using NextGenLauncher.Exceptions;
 using NextGenLauncher.ViewModel.Installer;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Net;
 using System.Net.Http;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Xml;
-using Flurl;
-using Flurl.Http;
-using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace NextGenLauncher.ViewModel
 {

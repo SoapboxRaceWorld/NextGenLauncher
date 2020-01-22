@@ -76,6 +76,7 @@
     <Reference Include="PresentationFramework.Aero2" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvmLightLibs.5.4.1.1\lib\net45\System.Windows.Interactivity.dll</HintPath>
     </Reference>
@@ -104,6 +105,7 @@
     <Compile Include="Exceptions\InvalidServerListException.cs" />
     <Compile Include="Exceptions\ModSystemException.cs" />
     <Compile Include="Exceptions\PlayException.cs" />
+    <Compile Include="Exceptions\SecurityException.cs" />
     <Compile Include="InstallationWindow.xaml.cs">
       <DependentUpon>InstallationWindow.xaml</DependentUpon>
     </Compile>
@@ -118,6 +120,7 @@
     <Compile Include="Services\Servers\AuthenticationInfo.cs" />
     <Compile Include="Services\Servers\IServerListSource.cs" />
     <Compile Include="Services\Servers\RemoteListSource.cs" />
+    <Compile Include="Utils\HardwareIdGenerator.cs" />
     <Compile Include="Utils\HashUtil.cs" />
     <Compile Include="Utils\BindingProxy.cs" />
     <Compile Include="Utils\PasswordBoxAssistant.cs" />

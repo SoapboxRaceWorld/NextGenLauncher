@@ -58,7 +58,7 @@ namespace NextGenLauncher.Services
                 .WithHeader("X-UserAgent",
                     "GameLauncherReborn 2.0.8.8 WinForms (+https://github.com/worldunitedgg/GameLauncher_NFSW)")
                 .WithHeader("User-Agent", "GameLauncher (+https://github.com/SoapboxRaceWorld/GameLauncher_NFSW)")
-                .WithHeader("X-HWID", "aaaaa")
+                .WithHeader("X-HWID", HardwareIdGenerator.GetHardwareIdentifier())
                 .WithHeader("X-GameLauncherHash", "aaaaa")
                 .AllowAnyHttpStatus()
                 .GetAsync();
