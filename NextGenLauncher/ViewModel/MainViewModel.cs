@@ -170,7 +170,15 @@ namespace NextGenLauncher.ViewModel
                 throw new PlayException("Failed to start game process");
             }
 
-            //process.ProcessorAffinity = (IntPtr)1; // CPU0
+            int processorAffinity = 0;
+            for (int i = 0; i < Math.Min(Environment.ProcessorCount, 4); i++)
+            {
+                processorAffinity |= 1 << i;
+            }
+
+            process.ProcessorAffinity = (IntPtr) processorAffinity;
+
+            //process.ProcessorAffinity = (IntPtr)0b11;
         }
 
         private void HandleGameExited(object sender, EventArgs e)
