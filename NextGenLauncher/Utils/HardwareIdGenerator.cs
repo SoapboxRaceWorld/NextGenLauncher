@@ -114,7 +114,8 @@ namespace NextGenLauncher.Utils
 
             foreach (var baseObject in mos.Get())
             {
-                return $"{baseObject["ProcessorID"]}::{baseObject["PartNumber"]}";
+                return $"{GetManagementObjectProperty(baseObject, "ProcessorID")}::{GetManagementObjectProperty(baseObject, "Family")}::{GetManagementObjectProperty(baseObject, "Manufacturer")}";
+                //return $"{baseObject["ProcessorID"]}::{baseObject["PartNumber"]}";
             }
 
             throw new SecurityException("Failed to obtain CPU ID");
@@ -130,6 +131,18 @@ namespace NextGenLauncher.Utils
             }
 
             throw new SecurityException("Failed to obtain disk ID");
+        }
+
+        private static object GetManagementObjectProperty(ManagementBaseObject obj, string prop)
+        {
+            try
+            {
+                return obj.GetPropertyValue(prop);
+            }
+            catch (System.Management.ManagementException ex)
+            {
+                throw new SecurityException($"Could not obtain management property: {prop}", ex);
+            }
         }
     }
 }
