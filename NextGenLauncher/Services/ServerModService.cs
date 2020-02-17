@@ -96,28 +96,16 @@ namespace NextGenLauncher.Services
 
         private async Task DownloadModPackage(string modDirectory, ModSystemInfo modSystemInfo, ModIndexEntry modIndexEntry)
         {
-            Url url = new Url(modSystemInfo.BasePath).AppendPathSegment(modIndexEntry.Name);
-            Stream responseStream = await url.GetStreamAsync();
-
-            using FileStream fileStream = new FileStream(Path.Combine(modDirectory, modIndexEntry.Name),
-                FileMode.Create, FileAccess.Write);
-            responseStream.CopyTo(fileStream);
-
-            //WebRequest request = WebRequest.Create(new Url(modSystemInfo.BasePath).AppendPathSegment(modIndexEntry.Name).ToString());
-            //WebResponse response = request.GetResponse();
-            //long cl = response.ContentLength;
-            //using (Stream responseStream = response.GetResponseStream())
-            //{
-            //    using (FileStream fileStream = new FileStream(Path.Combine(modDirectory, modIndexEntry.Name), FileMode.Create, FileAccess.Write))
-            //    {
-            //        byte[] buffer = new byte[1048576];
-            //        int bytesRead;
-            //        while ((bytesRead = responseStream.Read(buffer, 0, buffer.Length)) > 0)
-            //        {
-            //            fileStream.Write(buffer, 0, bytesRead);
-            //        }
-            //    }
-            //}
+            var request = WebRequest.Create(new Url(modSystemInfo.BasePath).AppendPathSegment(modIndexEntry.Name).ToString());
+            var response = await request.GetResponseAsync();
+            using var responseStream = response.GetResponseStream() ?? throw new ModSystemException("Could not get mod package stream for: " + modIndexEntry.Name);
+            using var fileStream = new FileStream(Path.Combine(modDirectory, modIndexEntry.Name), FileMode.Create, FileAccess.Write);
+            var buffer = new byte[1048576];
+            int bytesRead;
+            while ((bytesRead = await responseStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+            {
+                fileStream.Write(buffer, 0, bytesRead);
+            }
         }
     }
 }

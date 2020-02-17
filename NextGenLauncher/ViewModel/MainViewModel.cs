@@ -13,6 +13,7 @@ using Microsoft.Win32;
 using NextGenLauncher.Data;
 using NextGenLauncher.Exceptions;
 using NextGenLauncher.Messages;
+using NextGenLauncher.Proxy;
 using NextGenLauncher.Services;
 using NextGenLauncher.Services.Servers;
 using NextGenLauncher.Utils;
@@ -100,6 +101,9 @@ namespace NextGenLauncher.ViewModel
             _serverService = serverService;
             _serverModService = serverModService;
 
+            // Start critical services
+            ServerProxy.Instance.Start();
+
             // Setup
             Servers = new ObservableCollection<Server>();
             LoginCommand = new RelayCommand(ExecuteLoginCommand, CanExecuteLoginCommand);
@@ -159,11 +163,14 @@ namespace NextGenLauncher.ViewModel
             }
 
             process.StartInfo.Arguments =
-                $"US {_selectedServer.ServerAddress} {_authenticationInfo.LoginToken} {_authenticationInfo.UserId}";
+                $"US http://127.0.0.1:4080/nfsw/Engine.svc {_authenticationInfo.LoginToken} {_authenticationInfo.UserId}";
 
             // Set up handlers
             process.EnableRaisingEvents = true;
             process.Exited += HandleGameExited;
+
+            // Send signal to proxy
+            ServerProxy.Instance.SetCurrentServer(_selectedServer);
 
             if (!process.Start())
             {
@@ -171,7 +178,7 @@ namespace NextGenLauncher.ViewModel
             }
 
             int processorAffinity = 0;
-            for (int i = 0; i < Math.Min(Environment.ProcessorCount, 4); i++)
+            for (int i = 0; i < Math.Min(Math.Max(1, Environment.ProcessorCount), 8); i++)
             {
                 processorAffinity |= 1 << i;
             }
