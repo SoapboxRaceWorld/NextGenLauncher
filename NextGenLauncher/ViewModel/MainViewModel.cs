@@ -163,7 +163,7 @@ namespace NextGenLauncher.ViewModel
             }
 
             process.StartInfo.Arguments =
-                $"US http://127.0.0.1:4080/nfsw/Engine.svc {_authenticationInfo.LoginToken} {_authenticationInfo.UserId}";
+                $"EU {_selectedServer.ServerAddress} {_authenticationInfo.LoginToken} {_authenticationInfo.UserId}";
 
             // Set up handlers
             process.EnableRaisingEvents = true;
