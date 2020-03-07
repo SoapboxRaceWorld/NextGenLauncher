@@ -4,9 +4,12 @@ using System.Configuration;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Xml;
 using Microsoft.Win32;
+using Newtonsoft.Json;
 using NextGenLauncher.Data;
 
 namespace NextGenLauncher
@@ -48,17 +51,22 @@ namespace NextGenLauncher
         private void App_OnStartup(object sender, StartupEventArgs e)
         {
             bool shouldShowInstall = false;
+            string regLoc = (string) Registry.GetValue(@"HKEY_LOCAL_MACHINE\software\SoapDev\Soapbox Race World",
+                "GameInstallDir", string.Empty);
 
-            if (!File.Exists("settings.json"))
-                shouldShowInstall = true;
-            else
+            if (!File.Exists("settings.json") && String.IsNullOrEmpty(regLoc))
             {
-                string regLoc = (string) Registry.GetValue(@"HKEY_LOCAL_MACHINE\software\SoapDev\Soapbox Race World",
-                    "GameInstallDir", string.Empty);
-
+                shouldShowInstall = true;
+            }
+            else if(!File.Exists("settings.json") && !String.IsNullOrEmpty(regLoc))
+            {
                 if (!Directory.Exists(regLoc))
                 {
                     shouldShowInstall = true;
+                }
+                else
+                {
+                    UpdateUserSettings(regLoc);
                 }
             }
 
@@ -72,6 +80,19 @@ namespace NextGenLauncher
                 MainWindow mw = new MainWindow();
                 mw.Show();
             }
+        }
+
+        private void UpdateUserSettings(string gamePath)
+        {
+            var settingsPath = Path.Combine(gamePath, "Data", "Settings", "UserSettings.xml");
+            File.WriteAllText(settingsPath, File.ReadAllText(@"Resources\UserSettings.xml", Encoding.UTF8), Encoding.UTF8);
+
+            XmlDocument xmlDocument = new XmlDocument();
+            xmlDocument.Load(settingsPath);
+            xmlDocument["Settings"]["UI"]["Language"].InnerText = "EN";
+            xmlDocument.Save(settingsPath);
+
+            File.WriteAllText("settings.json", JsonConvert.SerializeObject(new Settings()));
         }
     }
 }
